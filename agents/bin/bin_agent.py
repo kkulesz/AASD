@@ -36,6 +36,7 @@ class BinAgent(BaseAgent):
         ]
 
     def step(self):
+        # TODO: add some rubbish with some probability
         self.log("tik")
         pass
 

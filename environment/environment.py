@@ -3,7 +3,6 @@ from typing import List
 
 from environment.environment_config import EnvironmentConfig
 from utils.logger import Logger
-from utils.cords import Cords
 from agents.base_agent import BaseAgent
 from agents.bin.bin_agent import BinAgent
 from agents.bin.bin_logic import BinLogic
@@ -18,7 +17,7 @@ class Environment:
 
         self.bins = [
             BinAgent(
-                f"{i}@bin", consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, consts.BIN_INFORM_PERIOD, self.logger,
+                f"{i+1}@bin", consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, consts.BIN_INFORM_PERIOD, self.logger,
                 BinLogic(position=data.position, fill_level_percentage=data.start_bin_level, logger=self.logger)
             ) for i, data in enumerate(config.bins_data)
         ]
@@ -33,8 +32,9 @@ class Environment:
         self.agents: List[BaseAgent] = self.bins + self.trucks + self.landfills + [self.supervisors]
 
     def run(self):
-        for agent in self.agents:
-            agent.start().result()
+        # TODO: uncomment when server is available
+        # for agent in self.agents:
+        #     agent.start().result()
 
         while True:
             self._step()
