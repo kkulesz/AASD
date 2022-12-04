@@ -1,31 +1,37 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from typing import List
+from pydantic import BaseModel
+import json
 
 from utils.cords import Cords
 
 
-@dataclass
-class BinData:
+class BinData(BaseModel):
     position: Cords
+    start_bin_level: int
 
 
-@dataclass
-class TruckData:
+class TruckData(BaseModel):
     starting_position: Cords
 
 
-@dataclass
-class LandfillData:
+class LandfillData(BaseModel):
     position: Cords
 
 
-class EnvironmentConfig:
-    def __init__(self):
-        self.bins_data = []
-        self.trucks_data = []
-        self.landfills_data = []
-        pass
+class SupervisorData(BaseModel):
+    pass
+
+
+class EnvironmentConfig(BaseModel):
+    bins_data: List[BinData]
+    trucks_data: List[TruckData]
+    landfills_data: List[LandfillData]
+    supervisor_data: SupervisorData
 
     @staticmethod
     def from_file(file_name: str) -> EnvironmentConfig:
-        return EnvironmentConfig()
+        f = open(file_name, "r")
+        file_content = f.read()
+        params = json.loads(file_content)
+        return EnvironmentConfig(**params)

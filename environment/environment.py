@@ -18,11 +18,11 @@ class Environment:
 
         self.bins = [
             BinAgent(
-                "test@test", consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT,
-                consts.BIN_INFORM_PERIOD, self.logger,
-                BinLogic(Cords(1, 1), fill_level_percentage=0)
-            )
+                f"{i}@bin", consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, consts.BIN_INFORM_PERIOD, self.logger,
+                BinLogic(position=data.position, fill_level_percentage=data.start_bin_level, logger=self.logger)
+            ) for i, data in enumerate(config.bins_data)
         ]
+
         self.trucks = []
         self.landfills = []
         self.supervisors = SupervisorAgent(

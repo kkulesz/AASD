@@ -5,6 +5,7 @@ from spade.behaviour import CyclicBehaviour, PeriodicBehaviour, OneShotBehaviour
 from spade.template import Template
 
 from agents.base_agent import BaseAgent
+from protocols.bin_state.inform_about_bin_state import InformAboutBinState
 from utils.logger import Logger
 from .bin_logic import BinLogic
 
@@ -54,4 +55,10 @@ class BinAgent(BaseAgent):
             self.logic = logic
 
         async def run(self) -> None:
-            pass
+            msg = InformAboutBinState(
+                fill_level_percentage=self.logic.get_fill_level(),
+                position=self.logic.get_position()
+            ).to_spade(self.to, self.sender)
+
+            await self.send(msg)
+

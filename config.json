@@ -1,6 +1,11 @@
 {
-  "bins": [],
-  "landfills": [],
-  "trucks": [],
-  "supervisor": {}
+  "bins_data": [
+    {
+      "position": {"x": 5, "y": 10},
+      "start_bin_level": 80
+    }
+  ],
+  "trucks_data": [],
+  "landfills_data": [],
+  "supervisor_data": {}
 }
