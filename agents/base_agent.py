@@ -22,6 +22,10 @@ class BaseAgent(ABC, Agent):
     def get_behaviours_with_templates(self) -> Iterator[Tuple[CyclicBehaviour, Optional[Template]]]:
         pass
 
+    @abstractmethod
+    def step(self):
+        pass
+
     def log(self, msg: str):
         self._logger.log(f"{self.jid}: {msg}")
 
