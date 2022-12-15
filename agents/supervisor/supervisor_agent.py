@@ -22,7 +22,21 @@ class SupervisorAgent(BaseAgent):
         self.logic = logic
 
     def get_behaviours_with_templates(self) -> Iterator[Tuple[CyclicBehaviour, Optional[Template]]]:
-        pass
+        return [
+            (
+                self.ReceiveTruckState(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
+                None
+            ),
+            (
+                self.ReceiveTruckEvent(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
+                None
+            ),
+            (
+                self.ReceiveBinState(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
+                None
+            ),
+
+        ]
 
     def step(self):
         pass

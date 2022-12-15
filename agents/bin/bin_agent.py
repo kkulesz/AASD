@@ -1,11 +1,11 @@
 from typing import Iterator, Tuple, Optional, Union
 
 from aioxmpp import JID
-from spade.behaviour import CyclicBehaviour, PeriodicBehaviour, OneShotBehaviour
+from spade.behaviour import CyclicBehaviour, PeriodicBehaviour
 from spade.template import Template
 
 from agents.base_agent import BaseAgent
-from protocols.bin_state.bin_state_message import BinStateMessage
+from protocols.bin_state_message import BinStateMessage
 from utils.logger import Logger
 from .bin_logic import BinLogic
 
@@ -63,4 +63,3 @@ class BinAgent(BaseAgent):
             ).to_spade(self.to, self.sender)
 
             await self.send(msg)
-

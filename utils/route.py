@@ -31,3 +31,12 @@ class Route:
 
     def last_target(self) -> Target:
         return self.targets[-1]
+
+    def curr_target(self) -> Target:
+        return self.targets[0]
+
+    def pop(self):
+        self.targets.pop(0)
+
+    def extend(self, other):
+        self.targets.extend(other.targets)

@@ -16,4 +16,3 @@ class BinLogic:
 
     def empty(self) -> None:
         self.fill_level_percentage = 0
-
