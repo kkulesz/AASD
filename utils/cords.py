@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 
 
@@ -5,3 +6,6 @@ from dataclasses import dataclass
 class Cords:
     x: int
     y: int
+
+    def dist(self, other):
+        return math.dist([self.x, self.y], [other.x, other.y])

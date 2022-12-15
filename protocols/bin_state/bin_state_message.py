@@ -2,7 +2,7 @@ from protocols.base_message import BaseMessage
 from utils.cords import Cords
 
 
-class InformAboutBinState(BaseMessage):
+class BinStateMessage(BaseMessage):
     fill_level_percentage: int
     position: Cords
 
