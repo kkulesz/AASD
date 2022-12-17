@@ -20,7 +20,7 @@ class BinAgent(BaseAgent):
             logger: Logger,
             logic: BinLogic
     ):
-        super().__init__(str(jid), password, logger)
+        super().__init__(jid, password, logger)
         self.jid = jid
         self.supervisor_jid = supervisor_jid
         self.period = period
