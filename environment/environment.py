@@ -9,6 +9,10 @@ from agents.bin.bin_agent import BinAgent
 from agents.bin.bin_logic import BinLogic
 from agents.supervisor.supervisor_agent import SupervisorAgent
 from agents.supervisor.supervisor_logic import SupervisorLogic
+from agents.truck.truck_agent import TruckAgent
+from agents.truck.truck_logic import TruckLogic
+from utils.cords import Cords
+from utils.route import Route, Target
 import consts
 
 
@@ -24,7 +28,10 @@ class Environment:
             ) for i, data in enumerate(config.bins_data)
         ]
 
-        self.trucks = []
+        truck_jid = JID(consts.TRUCK1_JIT.split('@')[0], consts.TRUCK1_JIT.split('@')[1], None)
+        self.trucks = [
+            TruckAgent(truck_jid, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, 3, self.logger, TruckLogic(self.logger, Cords(0, 0), {'smietnik_tmp': Cords(100, 100)}, curr_route=Route([Target(config.bins_data[0].position, bins_jid, 10)])))
+        ]
         self.landfills = []
         supervisor_jid = JID(consts.SUPERVISOR_JIT.split('@')[0], consts.SUPERVISOR_JIT.split('@')[1], None)
         self.supervisors = SupervisorAgent(supervisor_jid,

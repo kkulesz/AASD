@@ -5,7 +5,7 @@ from utils.route import Route
 from aioxmpp import JID
 from typing import Dict, Optional
 from enum import Enum
-
+import consts
 
 # class DeclineTypes(Enum):
 #     DISTANCE = 1
@@ -67,7 +67,8 @@ class TruckLogic:
         else:
             dx = (target_cords.x - self.position.x) / dist * self.speed
             dy = (target_cords.y - self.position.y) / dist * self.speed
-            assert dx**2 + dy**2 == self.speed
+            # niedokładność na floatach więc dodany epsilon
+            assert dx**2 + dy**2 > self.speed - consts.EPSILON and dx**2 + dy**2 < self.speed + consts.EPSILON
             new_cords = Cords(self.position.x + dx, self.position.y + dy)
         self.position = new_cords
         self.curr_range -= self.speed

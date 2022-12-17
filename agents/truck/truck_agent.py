@@ -64,7 +64,7 @@ class TruckAgent(BaseAgent):
         async def run(self) -> None:
             target = self.logic.curr_route.curr_target()
             if self.logic.position == target.cords:
-                msg = PickUpMessage().to_spade(target.jid, self.sender)
+                msg = PickUpMessage().to_spade(str(target.jid), self.sender)
                 await self.send(msg)
                 rsp = await self.receive()
                 rsp_content: PickUpResponse = BaseMessage.parse(rsp)

@@ -1,6 +1,6 @@
 from typing import List
 from dataclasses import dataclass
-from cords import Cords
+from utils.cords import Cords
 from aioxmpp import JID
 
 

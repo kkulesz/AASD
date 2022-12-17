@@ -1,9 +1,12 @@
+from typing import Optional
+
 from protocols.base_message import BaseMessage
 from utils.route import Route
 
 
 class RouteOrder(BaseMessage):
-    route: Route
+    # TODO z jakiegoś powodu jak to się odkomentuje to się wywala
+    # route: Optional[Route]
 
     @classmethod
     def get_performative(cls) -> str:
