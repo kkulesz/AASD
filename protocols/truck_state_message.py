@@ -4,7 +4,7 @@ from utils.cords import Cords
 
 class TruckStateMessage(BaseMessage):
     curr_est_route_distance: float
-    curr_est_rubbish_volume: int
+    curr_est_rubbish_volume: float
     position: Cords
 
     @classmethod

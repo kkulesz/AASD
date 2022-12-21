@@ -8,7 +8,7 @@ from utils.cords import Cords
 
 class BinData(BaseModel):
     position: Cords
-    start_bin_level: int
+    start_bin_level: float
 
 
 class TruckData(BaseModel):

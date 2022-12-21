@@ -8,10 +8,13 @@ from aioxmpp import JID
 class Target:
     cords: Cords
     jid: JID
-    est_rubbish_volume: int
+    est_rubbish_volume: float
 
 
+@dataclass
 class Route:
+    targets: List[Target]
+
     def __init__(self, targets: List[Target]):
         self.targets = targets
 
@@ -23,7 +26,7 @@ class Route:
             curr_cords = target.cords
         return dist
 
-    def estimate_rubbish_volume(self) -> int:
+    def estimate_rubbish_volume(self) -> float:
         volume = 0
         for target in self.targets:
             volume += target.est_rubbish_volume

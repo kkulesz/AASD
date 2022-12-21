@@ -30,13 +30,16 @@ class Environment:
 
         truck_jid = JID(consts.TRUCK1_JIT.split('@')[0], consts.TRUCK1_JIT.split('@')[1], None)
         self.trucks = [
-            TruckAgent(truck_jid, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, 3, self.logger, TruckLogic(self.logger, Cords(0, 0), {'smietnik_tmp': Cords(100, 100)}, curr_route=Route([Target(config.bins_data[0].position, bins_jid, 10)])))
+            TruckAgent(truck_jid, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, 3, self.logger, TruckLogic(self.logger, Cords(0, 0), {'smietnik_tmp': Cords(100, 100)}))
         ]
         self.landfills = []
         supervisor_jid = JID(consts.SUPERVISOR_JIT.split('@')[0], consts.SUPERVISOR_JIT.split('@')[1], None)
-        self.supervisors = SupervisorAgent(supervisor_jid,
+        self.supervisors = SupervisorAgent(
+            supervisor_jid,
             consts.COMMON_PASSWORD,
-            self.logger, SupervisorLogic()
+            self.logger,
+            SupervisorLogic(self.logger),
+            consts.PLAN_PERIOD
         )
 
         self.agents: List[BaseAgent] = self.bins + self.trucks + self.landfills + [self.supervisors]

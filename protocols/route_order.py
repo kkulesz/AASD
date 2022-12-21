@@ -6,7 +6,7 @@ from utils.route import Route
 
 class RouteOrder(BaseMessage):
     # TODO z jakiegoś powodu jak to się odkomentuje to się wywala
-    # route: Optional[Route]
+    route: Route
 
     @classmethod
     def get_performative(cls) -> str:
@@ -20,7 +20,7 @@ class AcceptOrder(BaseMessage):
 
 
 class DeclineOrder(BaseMessage):
-    overflow_volume: int
+    overflow_volume: float
 
     @classmethod
     def get_performative(cls) -> str:

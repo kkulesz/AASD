@@ -10,6 +10,7 @@ from protocols.pick_up import *
 from utils.logger import Logger
 from .bin_logic import BinLogic
 
+import random
 
 class BinAgent(BaseAgent):
     def __init__(
@@ -23,6 +24,7 @@ class BinAgent(BaseAgent):
     ):
         super().__init__(jid, password, logger)
         self.jid = jid
+
         self.supervisor_jid = supervisor_jid
         self.period = period
         self.logger = logger
@@ -42,8 +44,10 @@ class BinAgent(BaseAgent):
 
     def step(self):
         # TODO: add some rubbish with some probability
-        self.log("tik")
-        pass
+        if random.random() > 0.9:
+            volume = min(random.random() * 0.1, 0.05 + random.random() * 0.05)
+            self.log(f"adding {volume}")
+            self.logic.add_rubbish(volume)
 
     class BroadcastFillLevel(PeriodicBehaviour):
         def __init__(
@@ -82,15 +86,14 @@ class BinAgent(BaseAgent):
             self.logic = logic
 
         async def run(self) -> None:
-            message: PickUpMessage = await self.receive(60)
+            message = await self.receive(60)
             if message:
                 _ = BaseMessage.parse(message)
+
+                volume = self.logic.max_volume * self.logic.fill_level_percentage
                 self.logger.log(
-                    f"{message.sender} picked my rubbish."
+                    f"{message.sender} picked my rubbish of volume {volume}."
                 )
-                volume = self.logic.max_volume * self.logic.fill_level_percentage / 100
-
                 rsp = PickUpResponse(volume=volume).to_spade(message.sender, self.sender)
-
                 await self.send(rsp)
                 self.logic.empty()

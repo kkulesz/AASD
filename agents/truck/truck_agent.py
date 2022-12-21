@@ -66,9 +66,9 @@ class TruckAgent(BaseAgent):
             self.logic = logic
 
         async def run(self) -> None:
-            target = self.logic.curr_route.curr_target()
+            target = self.logic.curr_target()
             if target and self.logic.position == target.cords and not self.logic.stop:
-                msg = PickUpMessage().to_spade(str(target.jid), self.sender)
+                msg = PickUpMessage().to_spade(JID(*target.jid), self.sender)
                 await self.send(msg)
                 self.logic.stop = True
 
@@ -111,6 +111,7 @@ class TruckAgent(BaseAgent):
                     rsp = DeclineOrder(
                         overflow_volume=overflow_volume
                     ).to_spade(msg.sender, self.sender)
+                    self.logger.log("DECLINE")
                 else:
                     rsp = AcceptOrder().to_spade(msg.sender, self.sender)
                     self.logic.update_route(msg_content.route)
@@ -135,7 +136,7 @@ class TruckAgent(BaseAgent):
             msg = TruckStateMessage(
                 curr_est_rubbish_volume=self.logic.estimate_remaining_volume(),
                 curr_est_route_distance=self.logic.estimate_remaining_distance(),
-                position=self.logic.position
+                position=self.logic.position,
             ).to_spade(self.to, self.sender)
 
             await self.send(msg)

@@ -9,7 +9,7 @@ class PickUpMessage(BaseMessage):
 
 
 class PickUpResponse(BaseMessage):
-    volume: int
+    volume: float
 
     @classmethod
     def get_performative(cls) -> str:

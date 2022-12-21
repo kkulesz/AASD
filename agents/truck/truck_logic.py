@@ -22,12 +22,12 @@ class TruckLogic:
                  logger: Logger,
                  position: Cords,
                  landfills: Dict[JID, Cords],
-                 fill_level_percentage: int = 0,
-                 max_volume: int = 1000,
+                 fill_level_percentage: float = 0,
+                 max_volume: float = 1000,
                  range: float = 100,
                  curr_range: float = 100,
                  speed: float = 1.,
-                 curr_route: Route = None):
+                 curr_route: Route = Route([])):
         self.position = Cords(position.x, position.y)
         self.fill_level_percentage = fill_level_percentage
         self.max_volume = max_volume
@@ -38,6 +38,12 @@ class TruckLogic:
         self._logger = logger
         self.landfills = landfills
         self.stop = False
+
+    def min_free_space(self):
+        return self.max_volume / 20
+
+    def curr_target(self):
+        return self.curr_route.curr_target() if self.curr_route else None
 
     def _estimate_distance_to_landfill(self, position: Cords = None):
         if position:
@@ -53,11 +59,15 @@ class TruckLogic:
         return dist
 
     def estimate_remaining_distance(self):
-        return self.curr_route.estimate_distance(self.position) + self._estimate_distance_to_landfill() \
-            if self.curr_route else 0
+        if not self.curr_route:
+            return 0
+        if self.estimate_remaining_volume() < self.min_free_space():
+            return self.curr_route.estimate_distance(self.position) + self._estimate_distance_to_landfill()
+        else:
+            return self.curr_route.estimate_distance(self.position)
 
     def estimate_remaining_volume(self):
-        curr_volume = self.max_volume * (100 - self.fill_level_percentage) / 100
+        curr_volume = self.max_volume * (1 - self.fill_level_percentage)
         return curr_volume - self.curr_route.estimate_rubbish_volume() if self.curr_route else curr_volume
 
     def move(self):
@@ -76,21 +86,23 @@ class TruckLogic:
         self.position = new_cords
         self.curr_range -= self.speed
 
-    def pick_up(self, rubbish_volume: int):
+    def pick_up(self, rubbish_volume: float):
         self.curr_route.pop()
-        self.fill_level_percentage += rubbish_volume / self.max_volume * 100
+        self._logger.log(f"AA {rubbish_volume}, {self.max_volume}, {self.fill_level_percentage}")
+        self.fill_level_percentage += rubbish_volume / self.max_volume
         self.stop = False
 
     def remaining_space(self):
-        return self.max_volume * (100 - self.fill_level_percentage) / 100
+        return self.max_volume * (1 - self.fill_level_percentage)
 
-    def check_order(self, route: Route) -> Optional[int]:
+    def check_order(self, route: Route) -> Optional[float]:
 
         # overall_distance = self.curr_route.estimate_distance(self.position) + \
         #                    route.estimate_distance(self.curr_route.last_target().cords) + \
         #                    self._estimate_distance_to_landfill(route.last_target().cords)
         # if overall_distance >= self.curr_range:
         #     decline_reasons.append()
+
         overall_volume = self.curr_route.estimate_rubbish_volume() + route.estimate_rubbish_volume()
         if overall_volume > self.remaining_space():
             return overall_volume - self.remaining_space()

@@ -18,4 +18,6 @@ LANDFILL_JIT = "landfill1@jix.im"
 
 BIN_INFORM_PERIOD = 10
 
+PLAN_PERIOD = 5
+
 EPSILON = 0.0001
