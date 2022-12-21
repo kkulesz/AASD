@@ -4,6 +4,7 @@ from utils.cords import Cords
 
 class BinStateMessage(BaseMessage):
     fill_level_percentage: int
+    max_volume: int
     position: Cords
 
     @classmethod

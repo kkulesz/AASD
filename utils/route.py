@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass
 from utils.cords import Cords
 from aioxmpp import JID
@@ -32,11 +32,14 @@ class Route:
     def last_target(self) -> Target:
         return self.targets[-1]
 
-    def curr_target(self) -> Target:
-        return self.targets[0]
+    def curr_target(self) -> Optional[Target]:
+        return self.targets[0] if self.targets else None
 
     def pop(self):
         self.targets.pop(0)
 
     def extend(self, other):
         self.targets.extend(other.targets)
+
+    def __bool__(self):
+        return bool(self.targets)

@@ -6,6 +6,7 @@ from spade.template import Template
 
 from agents.base_agent import BaseAgent
 from protocols.bin_state_message import BinStateMessage
+from protocols.pick_up import *
 from utils.logger import Logger
 from .bin_logic import BinLogic
 
@@ -32,7 +33,11 @@ class BinAgent(BaseAgent):
             (
                 self.BroadcastFillLevel(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
                 None
-            )
+            ),
+            (
+                self.ReceivePickUpMessage(self.jid, self.logger, self.logic),
+                Template(metadata=PickUpMessage.get_metadata()),
+            ),
         ]
 
     def step(self):
@@ -63,3 +68,29 @@ class BinAgent(BaseAgent):
             ).to_spade(self.to, self.sender)
 
             await self.send(msg)
+
+    class ReceivePickUpMessage(CyclicBehaviour):
+        def __init__(
+                self,
+                jid: Union[str, JID],
+                logger: Logger,
+                logic: BinLogic
+        ):
+            super().__init__()
+            self.sender = jid
+            self.logger = logger
+            self.logic = logic
+
+        async def run(self) -> None:
+            message: PickUpMessage = await self.receive(60)
+            if message:
+                _ = BaseMessage.parse(message)
+                self.logger.log(
+                    f"{message.sender} picked my rubbish."
+                )
+                volume = self.logic.max_volume * self.logic.fill_level_percentage / 100
+
+                rsp = PickUpResponse(volume=volume).to_spade(message.sender, self.sender)
+
+                await self.send(rsp)
+                self.logic.empty()

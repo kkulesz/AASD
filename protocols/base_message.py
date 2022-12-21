@@ -54,7 +54,7 @@ class BaseMessage(Typable, BaseModel):
 
     def to_spade(self, to: Union[str, JID], sender: Union[str, JID]) -> SpadeMessage:
         return SpadeMessage(
-            to=to,
+            to=str(to),
             sender=str(sender),
             metadata=self.get_metadata(),
             body=self.json()

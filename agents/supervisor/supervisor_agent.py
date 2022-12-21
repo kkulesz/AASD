@@ -32,7 +32,7 @@ class SupervisorAgent(BaseAgent):
                 Template(metadata=TruckStateMessage.get_metadata())
             ),
             # (
-            #     self.ReceiveTruckEvent(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
+            #     self.ReceiveTruckEvent(),
             #     None
             # ),
             (
@@ -56,7 +56,7 @@ class SupervisorAgent(BaseAgent):
             if message:
                 content = BaseMessage.parse(message)
                 print(
-                    f"New request from {message.sender}:\n{content} TruckStateMessage"
+                    f"New {type(content)} from {message.sender}:\n{content} TruckStateMessage"
                 )
     
     # class ReceiveTruckEvent(CyclicBehaviour):
@@ -84,5 +84,5 @@ class SupervisorAgent(BaseAgent):
             if message:
                 content: BinStateMessage = BaseMessage.parse(message)
                 print(
-                    f"New request from {message.sender}:\n{content} BinState"
+                    f"New {type(content)} from {message.sender}:\n{content} BinState"
                 )

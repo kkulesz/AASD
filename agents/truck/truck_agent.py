@@ -42,6 +42,10 @@ class TruckAgent(BaseAgent):
             ),
             (
                 self.PickUpRubbish(self.jid, self.logger, self.logic),
+                None
+            ),
+            (
+                self.ReceivePickUpResponse(self.jid, self.logger, self.logic),
                 Template(metadata=PickUpResponse.get_metadata()),
             )
         ]
@@ -63,10 +67,26 @@ class TruckAgent(BaseAgent):
 
         async def run(self) -> None:
             target = self.logic.curr_route.curr_target()
-            if self.logic.position == target.cords:
+            if target and self.logic.position == target.cords and not self.logic.stop:
                 msg = PickUpMessage().to_spade(str(target.jid), self.sender)
                 await self.send(msg)
-                rsp = await self.receive()
+                self.logic.stop = True
+
+    class ReceivePickUpResponse(CyclicBehaviour):
+        def __init__(
+                self,
+                jid: Union[str, JID],
+                logger: Logger,
+                logic: TruckLogic
+        ):
+            super().__init__()
+            self.sender = jid
+            self.logger = logger
+            self.logic = logic
+
+        async def run(self) -> None:
+            rsp = await self.receive()
+            if rsp:
                 rsp_content: PickUpResponse = BaseMessage.parse(rsp)
                 self.logic.pick_up(rsp_content.volume)
 
@@ -85,15 +105,15 @@ class TruckAgent(BaseAgent):
         async def run(self) -> None:
             msg = await self.receive()
             if msg:
-                rsp_content: RouteOrder = BaseMessage.parse(msg)
-                overflow_volume = self.logic.check_order(rsp_content.route)
+                msg_content: RouteOrder = BaseMessage.parse(msg)
+                overflow_volume = self.logic.check_order(msg_content.route)
                 if overflow_volume:
                     rsp = DeclineOrder(
                         overflow_volume=overflow_volume
                     ).to_spade(msg.sender, self.sender)
                 else:
                     rsp = AcceptOrder().to_spade(msg.sender, self.sender)
-                    self.logic.update_route(rsp_content.route)
+                    self.logic.update_route(msg_content.route)
                 await self.send(rsp)
 
     class SendTruckState(PeriodicBehaviour):

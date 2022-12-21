@@ -28,7 +28,7 @@ class TruckLogic:
                  curr_range: float = 100,
                  speed: float = 1.,
                  curr_route: Route = None):
-        self.position = position
+        self.position = Cords(position.x, position.y)
         self.fill_level_percentage = fill_level_percentage
         self.max_volume = max_volume
         self.range = range
@@ -37,6 +37,7 @@ class TruckLogic:
         self.curr_route = curr_route
         self._logger = logger
         self.landfills = landfills
+        self.stop = False
 
     def _estimate_distance_to_landfill(self, position: Cords = None):
         if position:
@@ -56,14 +57,16 @@ class TruckLogic:
             if self.curr_route else 0
 
     def estimate_remaining_volume(self):
-        curr_volume = self.max_volume * (1 - self.fill_level_percentage)
+        curr_volume = self.max_volume * (100 - self.fill_level_percentage) / 100
         return curr_volume - self.curr_route.estimate_rubbish_volume() if self.curr_route else curr_volume
 
     def move(self):
+        if self.stop or not self.curr_route:
+            return
         target_cords = self.curr_route.curr_target().cords
         dist = self.position.dist(target_cords)
         if dist <= self.speed:
-            new_cords = target_cords
+            new_cords = Cords(target_cords.x, target_cords.y)
         else:
             dx = (target_cords.x - self.position.x) / dist * self.speed
             dy = (target_cords.y - self.position.y) / dist * self.speed
@@ -75,10 +78,11 @@ class TruckLogic:
 
     def pick_up(self, rubbish_volume: int):
         self.curr_route.pop()
-        self.fill_level_percentage += rubbish_volume // self.max_volume * 100
+        self.fill_level_percentage += rubbish_volume / self.max_volume * 100
+        self.stop = False
 
     def remaining_space(self):
-        return self.max_volume * self.fill_level_percentage
+        return self.max_volume * (100 - self.fill_level_percentage) / 100
 
     def check_order(self, route: Route) -> Optional[int]:
 
@@ -93,3 +97,4 @@ class TruckLogic:
 
     def update_route(self, route: Route):
         self.curr_route.extend(route)
+

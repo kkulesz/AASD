@@ -4,7 +4,7 @@ from utils.logger import Logger
 
 class BinLogic:
     def __init__(self, logger: Logger, position: Cords, fill_level_percentage: int = 0, max_volume: int = 100):
-        self.position = position
+        self.position = Cords(position.x, position.y)
         self.fill_level_percentage = fill_level_percentage
         self.max_volume = max_volume
         self._logger = logger
