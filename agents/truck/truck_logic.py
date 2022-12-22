@@ -27,14 +27,14 @@ class TruckLogic:
                  range: float = 100,
                  curr_range: float = 100,
                  speed: float = 1.,
-                 curr_route: Route = Route([])):
+                 curr_route = None):
         self.position = Cords(position.x, position.y)
         self.fill_level_percentage = fill_level_percentage
         self.max_volume = max_volume
         self.range = range
         self.speed = speed
         self.curr_range = curr_range
-        self.curr_route = Route([])
+        self.curr_route = curr_route if curr_route is not None else Route([])
         self._logger = logger
         self.landfills = landfills
         self.stop = False
