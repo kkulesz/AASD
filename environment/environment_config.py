@@ -17,6 +17,7 @@ class TruckData(BaseModel):
 
 class LandfillData(BaseModel):
     position: Cords
+    jid: str
 
 
 class SupervisorData(BaseModel):

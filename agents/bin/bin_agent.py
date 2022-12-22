@@ -43,9 +43,8 @@ class BinAgent(BaseAgent):
         ]
 
     def step(self):
-        # TODO: add some rubbish with some probability
         if random.random() > 0.9:
-            volume = min(random.random() * 0.1, 0.05 + random.random() * 0.05)
+            volume = min(random.random() * 0.15, 0.1 + random.random() * 0.1)
             self.log(f"adding {volume}")
             self.logic.add_rubbish(volume)
 

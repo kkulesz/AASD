@@ -6,10 +6,13 @@
     },
     {
       "position": {"x": 10, "y": 5},
-      "start_bin_level": 0.29
+      "start_bin_level": 0.59
     }
   ],
   "trucks_data": [],
-  "landfills_data": [],
+  "landfills_data": [{
+    "position": {"x": 10, "y": 5},
+    "jid": "landfill1@jix.im"
+  }],
   "supervisor_data": {}
 }

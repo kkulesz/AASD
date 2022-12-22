@@ -38,6 +38,7 @@ class TruckLogic:
         self._logger = logger
         self.landfills = landfills
         self.stop = False
+        self.need_empty = False
 
     def min_free_space(self):
         return self.max_volume / 20
@@ -105,7 +106,12 @@ class TruckLogic:
 
         overall_volume = self.curr_route.estimate_rubbish_volume() + route.estimate_rubbish_volume()
         if overall_volume > self.remaining_space():
+            self.need_empty = True
             return overall_volume - self.remaining_space()
+
+    def select_landlift(self):
+        # TODO uwzględnienie wielu wysypisk i wybór najlepszego
+        return list(self.landfills.keys())[0]
 
     def update_route(self, route: Route):
         self.curr_route.extend(route)
