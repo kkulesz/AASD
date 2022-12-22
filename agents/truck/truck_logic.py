@@ -34,7 +34,7 @@ class TruckLogic:
         self.range = range
         self.speed = speed
         self.curr_range = curr_range
-        self.curr_route = curr_route
+        self.curr_route = Route([])
         self._logger = logger
         self.landfills = landfills
         self.stop = False

@@ -103,6 +103,7 @@ class SupervisorLogic:
                         assignments[truck_arg].append(bin_id)
                     else:
                         assignments[truck_arg] = [bin_id]
+                    break
         return assignments
 
     def _prepare_adjacency_matrix(self, bins, trucks):

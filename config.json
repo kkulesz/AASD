@@ -2,7 +2,11 @@
   "bins_data": [
     {
       "position": {"x": 5, "y": 10},
-      "start_bin_level": 0.79
+      "start_bin_level": 0.89
+    },
+    {
+      "position": {"x": 10, "y": 5},
+      "start_bin_level": 0.29
     }
   ],
   "trucks_data": [],

@@ -20,17 +20,19 @@ class Environment:
     def __init__(self, config: EnvironmentConfig, logger: Logger):
         self.logger = logger
 
-        bins_jid = JID(consts.BIN1_JIT.split('@')[0], consts.BIN1_JIT.split('@')[1], None)
+        bins_jid = [JID(consts.BIN1_JIT.split('@')[0], consts.BIN1_JIT.split('@')[1], None), JID(consts.BIN2_JIT.split('@')[0], consts.BIN2_JIT.split('@')[1], None)]
         self.bins = [
             BinAgent(
-                bins_jid, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, consts.BIN_INFORM_PERIOD, self.logger,
+                bins_jid[i], consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, consts.BIN_INFORM_PERIOD, self.logger,
                 BinLogic(position=data.position, fill_level_percentage=data.start_bin_level, logger=self.logger)
             ) for i, data in enumerate(config.bins_data)
         ]
 
-        truck_jid = JID(consts.TRUCK1_JIT.split('@')[0], consts.TRUCK1_JIT.split('@')[1], None)
+        truck_jid1 = JID(consts.TRUCK1_JIT.split('@')[0], consts.TRUCK1_JIT.split('@')[1], None)
+        truck_jid2 = JID(consts.TRUCK2_JIT.split('@')[0], consts.TRUCK2_JIT.split('@')[1], None)
         self.trucks = [
-            TruckAgent(truck_jid, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, 3, self.logger, TruckLogic(self.logger, Cords(0, 0), {'smietnik_tmp': Cords(100, 100)}))
+            TruckAgent(truck_jid1, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, 3, self.logger, TruckLogic(self.logger, Cords(0, 0), {'smietnik_tmp1': Cords(100, 100)})),
+            TruckAgent(truck_jid2, consts.COMMON_PASSWORD, consts.SUPERVISOR_JIT, 3, self.logger, TruckLogic(self.logger, Cords(0, 0), {'smietnik_tmp2': Cords(100, 100)}))
         ]
         self.landfills = []
         supervisor_jid = JID(consts.SUPERVISOR_JIT.split('@')[0], consts.SUPERVISOR_JIT.split('@')[1], None)
