@@ -56,7 +56,7 @@ class SupervisorAgent(BaseAgent):
             message = await self.receive(60)
             if message:
                 content: TruckStateMessage = BaseMessage.parse(message)
-                print(f"New {type(content)} from {message.sender}:\n{content} TruckStateMessage")
+                self.logger.log(f"New {type(content)} from {message.sender}:\n{content} TruckStateMessage")
                 self.logic.register_truck_state(
                     message.sender, content.position, content.curr_est_rubbish_volume, content.curr_est_route_distance
                 )
@@ -85,7 +85,7 @@ class SupervisorAgent(BaseAgent):
             message = await self.receive(60)
             if message:
                 content: BinStateMessage = BaseMessage.parse(message)
-                print(f"New {type(content)} from {message.sender}:\n{content} BinState")
+                self.logger.log(f"New {type(content)} from {message.sender}:\n{content} BinState")
                 self.logic.register_bin_state(
                     message.sender, content.position, content.max_volume, content.fill_level_percentage
                 )
@@ -121,6 +121,8 @@ class SupervisorAgent(BaseAgent):
         async def run(self) -> None:
             rsp = await self.receive()
             if rsp:
+                rsp_content=BaseMessage.parse(rsp)
+                self.logger.log(f"New {type(rsp_content)} from {rsp.sender}:\n{rsp_content} AcceptOrder")
                 self.logic.pop_route(rsp.sender)
                 self.logic.awaiting_response = None
 
@@ -134,4 +136,5 @@ class SupervisorAgent(BaseAgent):
             rsp = await self.receive()
             if rsp:
                 rsp_content: DeclineOrder = BaseMessage.parse(rsp)
+                self.logger.log(f"New {type(rsp_content)} from {rsp.sender}:\n{rsp_content} DeclineOrder")
                 self.logic.process_decline(rsp_content.overflow_volume)

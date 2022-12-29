@@ -75,10 +75,9 @@ class BinAgent(BaseAgent):
         async def run(self) -> None:
             message = await self.receive(60)
             if message:
-                _ = BaseMessage.parse(message)
-
+                msg_content = BaseMessage.parse(message)
                 volume = self.logic.max_volume * self.logic.fill_level_percentage
-                self.logger.log(f"{message.sender} picked my rubbish of volume {volume}.")
+                self.logger.log(f"New {type(msg_content)} from {message.sender}:\n{msg_content} PickUpMessage (my volume was {volume})")
                 rsp = PickUpResponse(volume=volume).to_spade(message.sender, self.sender)
                 await self.send(rsp)
                 self.logic.empty()

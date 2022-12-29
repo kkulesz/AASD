@@ -82,7 +82,6 @@ class TruckLogic:
 
     def pick_up(self, rubbish_volume: float):
         self.curr_route.pop()
-        self._logger.log(f"AA {rubbish_volume}, {self.max_volume}, {self.fill_level_percentage}")
         self.fill_level_percentage += rubbish_volume / self.max_volume
         self.stop = False
 

@@ -48,9 +48,10 @@ class LandfillAgent(BaseAgent):
             message = await self.receive(60)
             if message:
                 _ = BaseMessage.parse(message)
-                self.logger.log(f"{self.sender} accept disposal of {message.sender}.")
                 if (
                     _.garbage_amount > 0
                 ):  # ignore the communicate sent during disposal, irrelevant for current communication
+                    self.logger.log(f"{self.sender} accept disposal of {message.sender}.")
                     rsp = AcceptDisposal().to_spade(message.sender, self.sender)
                     await self.send(rsp)
+

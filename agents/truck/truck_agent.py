@@ -101,10 +101,10 @@ class TruckAgent(BaseAgent):
             msg = await self.receive()
             if msg:
                 msg_content: RouteOrder = BaseMessage.parse(msg)
+                self.logger.log(f"New {type(msg_content)} from {msg.sender}:\n{msg_content} RouteOrder")
                 overflow_volume = self.logic.check_order(msg_content.route)
                 if overflow_volume:
                     rsp = DeclineOrder(overflow_volume=overflow_volume).to_spade(msg.sender, self.sender)
-                    self.logger.log("DECLINE")
                 else:
                     rsp = AcceptOrder().to_spade(msg.sender, self.sender)
                     self.logic.update_route(msg_content.route)
@@ -154,6 +154,7 @@ class TruckAgent(BaseAgent):
             if msg:
                 garbage_amount = self.logic.max_volume - self.logic.estimate_remaining_volume()
                 _ = BaseMessage.parse(msg)
+                self.logger.log(f"New {type(_)} from {msg.sender}:\n{_} AcceptDisposal (garbage amount: {garbage_amount})")
                 self.logic.update_route(
                     Route([Target(self.logic.landfills[str(msg.sender)], str(msg.sender), -garbage_amount)])
                 )
@@ -175,3 +176,5 @@ class TruckAgent(BaseAgent):
                 self.logic.fill_level_percentage = 0
                 self.logic.stop = True
                 self.logic.on_way = False
+                self.logger.log(f"TRUCK EMPTYING FINISHED, THE END OF SAMPLE SCENARIO")
+
