@@ -1,0 +1,4 @@
+aioxmpp==0.13.2
+numpy==1.24.1
+pydantic==1.10.2
+spade==3.2.3
