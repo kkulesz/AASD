@@ -11,9 +11,9 @@ class BinLogic:
 
     def add_rubbish(self, how_much: float) -> None:
 
-        self.fill_level_percentage = min(self.fill_level_percentage + how_much, 1.)
-        if self.fill_level_percentage >= 1.:
+        self.fill_level_percentage = min(self.fill_level_percentage + how_much, 1.0)
+        if self.fill_level_percentage >= 1.0:
             self._logger.important_log(f"Bin is full!")
 
     def empty(self) -> None:
-        self.fill_level_percentage = 0.
+        self.fill_level_percentage = 0.0

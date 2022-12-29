@@ -11,12 +11,13 @@ from utils.logger import Logger
 
 import random
 
+
 class LandfillAgent(BaseAgent):
     def __init__(
-            self,
-            jid: Union[str, JID],
-            password: str,
-            logger: Logger,
+        self,
+        jid: Union[str, JID],
+        password: str,
+        logger: Logger,
     ):
         super().__init__(jid, password, logger)
         self.jid = jid
@@ -35,9 +36,9 @@ class LandfillAgent(BaseAgent):
 
     class DisposalRequest(CyclicBehaviour):
         def __init__(
-                self,
-                jid: Union[str, JID],
-                logger: Logger,
+            self,
+            jid: Union[str, JID],
+            logger: Logger,
         ):
             super().__init__()
             self.sender = jid
@@ -48,8 +49,6 @@ class LandfillAgent(BaseAgent):
             if message:
                 _ = BaseMessage.parse(message)
 
-                self.logger.log(
-                    f"{self.sender} accept disposal of {message.sender}."
-                )
+                self.logger.log(f"{self.sender} accept disposal of {message.sender}.")
                 rsp = AcceptDisposal().to_spade(message.sender, self.sender)
                 await self.send(rsp)

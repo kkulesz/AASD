@@ -12,15 +12,16 @@ from .bin_logic import BinLogic
 
 import random
 
+
 class BinAgent(BaseAgent):
     def __init__(
-            self,
-            jid: Union[str, JID],
-            password: str,
-            supervisor_jid: Union[str, JID],
-            period: int,
-            logger: Logger,
-            logic: BinLogic
+        self,
+        jid: Union[str, JID],
+        password: str,
+        supervisor_jid: Union[str, JID],
+        period: int,
+        logger: Logger,
+        logic: BinLogic,
     ):
         super().__init__(jid, password, logger)
         self.jid = jid
@@ -32,10 +33,7 @@ class BinAgent(BaseAgent):
 
     def get_behaviours_with_templates(self) -> Iterator[Tuple[CyclicBehaviour, Optional[Template]]]:
         return [
-            (
-                self.BroadcastFillLevel(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
-                None
-            ),
+            (self.BroadcastFillLevel(self.jid, self.supervisor_jid, self.period, self.logger, self.logic), None),
             (
                 self.ReceivePickUpMessage(self.jid, self.logger, self.logic),
                 Template(metadata=PickUpMessage.get_metadata()),
@@ -50,12 +48,7 @@ class BinAgent(BaseAgent):
 
     class BroadcastFillLevel(PeriodicBehaviour):
         def __init__(
-                self,
-                jid: Union[str, JID],
-                supervisor_jid: Union[str, JID],
-                period: int,
-                logger: Logger,
-                logic: BinLogic
+            self, jid: Union[str, JID], supervisor_jid: Union[str, JID], period: int, logger: Logger, logic: BinLogic
         ):
             super().__init__(period)
             self.sender = jid
@@ -67,18 +60,13 @@ class BinAgent(BaseAgent):
             msg = BinStateMessage(
                 fill_level_percentage=self.logic.fill_level_percentage,
                 max_volume=self.logic.max_volume,
-                position=self.logic.position
+                position=self.logic.position,
             ).to_spade(self.to, self.sender)
 
             await self.send(msg)
 
     class ReceivePickUpMessage(CyclicBehaviour):
-        def __init__(
-                self,
-                jid: Union[str, JID],
-                logger: Logger,
-                logic: BinLogic
-        ):
+        def __init__(self, jid: Union[str, JID], logger: Logger, logic: BinLogic):
             super().__init__()
             self.sender = jid
             self.logger = logger
@@ -90,9 +78,7 @@ class BinAgent(BaseAgent):
                 _ = BaseMessage.parse(message)
 
                 volume = self.logic.max_volume * self.logic.fill_level_percentage
-                self.logger.log(
-                    f"{message.sender} picked my rubbish of volume {volume}."
-                )
+                self.logger.log(f"{message.sender} picked my rubbish of volume {volume}.")
                 rsp = PickUpResponse(volume=volume).to_spade(message.sender, self.sender)
                 await self.send(rsp)
                 self.logic.empty()

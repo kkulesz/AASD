@@ -4,30 +4,22 @@ from utils.route import Route
 
 from aioxmpp import JID
 from typing import Dict, Optional
-from enum import Enum
 import consts
-
-# class DeclineTypes(Enum):
-#     DISTANCE = 1
-#     VOLUME = 2
-#
-#
-# class DeclineReason:
-#     type: DeclineTypes
-#     amount: float
 
 
 class TruckLogic:
-    def __init__(self,
-                 logger: Logger,
-                 position: Cords,
-                 landfills: Dict[JID, Cords],
-                 fill_level_percentage: float = 0,
-                 max_volume: float = 1000,
-                 range: float = 100,
-                 curr_range: float = 100,
-                 speed: float = 1.,
-                 curr_route = None):
+    def __init__(
+        self,
+        logger: Logger,
+        position: Cords,
+        landfills: Dict[JID, Cords],
+        fill_level_percentage: float = 0,
+        max_volume: float = 1000,
+        range: float = 100,
+        curr_range: float = 100,
+        speed: float = 1.0,
+        curr_route=None,
+    ):
         self.position = Cords(position.x, position.y)
         self.fill_level_percentage = fill_level_percentage
         self.max_volume = max_volume
@@ -110,9 +102,9 @@ class TruckLogic:
             return overall_volume - self.remaining_space()
 
     def select_landlift(self):
-        # TODO uwzględnienie wielu wysypisk i wybór najlepszego
-        return list(self.landfills.keys())[0]
+        distances = {k: self.position.dist(v) for k, v in self.landfills.items()}
+        selected_landfill = min(distances, key=distances.get)
+        return selected_landfill
 
     def update_route(self, route: Route):
         self.curr_route.extend(route)
-

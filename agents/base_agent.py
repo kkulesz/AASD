@@ -9,12 +9,7 @@ from utils.logger import Logger
 
 
 class BaseAgent(ABC, Agent):
-    def __init__(
-            self,
-            jid: Union[str, JID],
-            password: str,
-            logger: Logger
-    ):
+    def __init__(self, jid: Union[str, JID], password: str, logger: Logger):
         super().__init__(str(jid), password)
         self._logger = logger
 

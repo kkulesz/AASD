@@ -14,14 +14,7 @@ from protocols.truck_state_message import TruckStateMessage
 
 
 class SupervisorAgent(BaseAgent):
-    def __init__(
-            self,
-            jid: Union[str, JID],
-            password: str,
-            logger: Logger,
-            logic: SupervisorLogic,
-            period: int
-    ):
+    def __init__(self, jid: Union[str, JID], password: str, logger: Logger, logic: SupervisorLogic, period: int):
         super().__init__(jid, password, logger)
         self.jid = jid
         self.logger = logger
@@ -30,10 +23,7 @@ class SupervisorAgent(BaseAgent):
 
     def get_behaviours_with_templates(self) -> Iterator[Tuple[CyclicBehaviour, Optional[Template]]]:
         return [
-            (
-                self.ReceiveTruckState(self.logger, self.logic),
-                Template(metadata=TruckStateMessage.get_metadata())
-            ),
+            (self.ReceiveTruckState(self.logger, self.logic), Template(metadata=TruckStateMessage.get_metadata())),
             # (
             #     self.ReceiveTruckEvent(),
             #     None
@@ -42,10 +32,7 @@ class SupervisorAgent(BaseAgent):
                 self.ReceiveBinState(self.logger, self.logic),
                 Template(metadata=BinStateMessage.get_metadata()),
             ),
-            (
-                self.SendRouteOrder(self.jid, self.period, self.logger, self.logic),
-                None
-            ),
+            (self.SendRouteOrder(self.jid, self.period, self.logger, self.logic), None),
             (
                 self.ReceiveDeclineOrder(self.logger, self.logic),
                 Template(metadata=DeclineOrder.get_metadata()),
@@ -60,11 +47,7 @@ class SupervisorAgent(BaseAgent):
         pass
 
     class ReceiveTruckState(CyclicBehaviour):
-        def __init__(
-                self,
-                logger: Logger,
-                logic: SupervisorLogic
-        ):
+        def __init__(self, logger: Logger, logic: SupervisorLogic):
             super().__init__()
             self.logger = logger
             self.logic = logic
@@ -73,11 +56,10 @@ class SupervisorAgent(BaseAgent):
             message = await self.receive(60)
             if message:
                 content: TruckStateMessage = BaseMessage.parse(message)
-                print(
-                    f"New {type(content)} from {message.sender}:\n{content} TruckStateMessage"
+                print(f"New {type(content)} from {message.sender}:\n{content} TruckStateMessage")
+                self.logic.register_truck_state(
+                    message.sender, content.position, content.curr_est_rubbish_volume, content.curr_est_route_distance
                 )
-                self.logic.register_truck_state(message.sender, content.position, content.curr_est_rubbish_volume,
-                                                content.curr_est_route_distance)
 
     # class ReceiveTruckEvent(CyclicBehaviour):
     #     def __init__(
@@ -94,11 +76,7 @@ class SupervisorAgent(BaseAgent):
     #             )
 
     class ReceiveBinState(CyclicBehaviour):
-        def __init__(
-                self,
-                logger: Logger,
-                logic: SupervisorLogic
-        ):
+        def __init__(self, logger: Logger, logic: SupervisorLogic):
             super().__init__()
             self.logger = logger
             self.logic = logic
@@ -107,19 +85,18 @@ class SupervisorAgent(BaseAgent):
             message = await self.receive(60)
             if message:
                 content: BinStateMessage = BaseMessage.parse(message)
-                print(
-                    f"New {type(content)} from {message.sender}:\n{content} BinState"
+                print(f"New {type(content)} from {message.sender}:\n{content} BinState")
+                self.logic.register_bin_state(
+                    message.sender, content.position, content.max_volume, content.fill_level_percentage
                 )
-                self.logic.register_bin_state(message.sender, content.position, content.max_volume,
-                                              content.fill_level_percentage)
 
     class SendRouteOrder(PeriodicBehaviour):
         def __init__(
-                self,
-                jid: Union[str, JID],
-                period: int,
-                logger: Logger,
-                logic: SupervisorLogic,
+            self,
+            jid: Union[str, JID],
+            period: int,
+            logger: Logger,
+            logic: SupervisorLogic,
         ):
             super().__init__(period)
             self.sender = jid
@@ -131,18 +108,12 @@ class SupervisorAgent(BaseAgent):
             if self.logic.pending_routes:
                 jid, route = self.logic.peek_route()
                 if self.logic.got_response(jid):
-                    msg = RouteOrder(
-                        route=route
-                    ).to_spade(jid, self.sender)
+                    msg = RouteOrder(route=route).to_spade(jid, self.sender)
                     await self.send(msg)
                     self.logic.await_response(jid)
 
     class ReceiveAcceptOrder(CyclicBehaviour):
-        def __init__(
-                self,
-                logger: Logger,
-                logic: SupervisorLogic
-        ):
+        def __init__(self, logger: Logger, logic: SupervisorLogic):
             super().__init__()
             self.logger = logger
             self.logic = logic
@@ -154,11 +125,7 @@ class SupervisorAgent(BaseAgent):
                 self.logic.awaiting_response = None
 
     class ReceiveDeclineOrder(CyclicBehaviour):
-        def __init__(
-                self,
-                logger: Logger,
-                logic: SupervisorLogic
-        ):
+        def __init__(self, logger: Logger, logic: SupervisorLogic):
             super().__init__()
             self.logger = logger
             self.logic = logic

@@ -21,9 +21,7 @@ class Typable(ABC):
 
     @classmethod
     def for_type(cls: T, type: str) -> T:
-        subclass_mapping = {
-            subclass.type(): subclass for subclass in cls.all_subclasses()
-        }
+        subclass_mapping = {subclass.type(): subclass for subclass in cls.all_subclasses()}
         return subclass_mapping[type]
 
 
@@ -45,7 +43,7 @@ class BaseMessage(Typable, BaseModel):
             "ontology": consts.ONTOLOGY,
             "language": consts.LANGUAGE,
             "performative": cls.get_performative(),
-            "type": cls.type()
+            "type": cls.type(),
         }
 
     @classmethod
@@ -53,9 +51,4 @@ class BaseMessage(Typable, BaseModel):
         return cls.__name__
 
     def to_spade(self, to: Union[str, JID], sender: Union[str, JID]) -> SpadeMessage:
-        return SpadeMessage(
-            to=str(to),
-            sender=str(sender),
-            metadata=self.get_metadata(),
-            body=self.json()
-        )
+        return SpadeMessage(to=str(to), sender=str(sender), metadata=self.get_metadata(), body=self.json())

@@ -17,13 +17,13 @@ from .truck_logic import TruckLogic
 
 class TruckAgent(BaseAgent):
     def __init__(
-            self,
-            jid: Union[str, JID],
-            password: str,
-            supervisor_jid: Union[str, JID],
-            period: int,
-            logger: Logger,
-            logic: TruckLogic
+        self,
+        jid: Union[str, JID],
+        password: str,
+        supervisor_jid: Union[str, JID],
+        period: int,
+        logger: Logger,
+        logic: TruckLogic,
     ):
         super().__init__(str(jid), password, logger)
         self.jid = jid
@@ -34,34 +34,22 @@ class TruckAgent(BaseAgent):
 
     def get_behaviours_with_templates(self) -> Iterator[Tuple[CyclicBehaviour, Optional[Template]]]:
         return [
-            (
-                self.SendTruckState(self.jid, self.supervisor_jid, self.period, self.logger, self.logic),
-                None
-            ),
+            (self.SendTruckState(self.jid, self.supervisor_jid, self.period, self.logger, self.logic), None),
             (
                 self.ReceiveRouteOrder(self.jid, self.logger, self.logic),
                 Template(metadata=RouteOrder.get_metadata()),
             ),
-            (
-                self.PickUpRubbish(self.jid, self.logger, self.logic),
-                None
-            ),
+            (self.PickUpRubbish(self.jid, self.logger, self.logic), None),
             (
                 self.ReceivePickUpResponse(self.jid, self.logger, self.logic),
                 Template(metadata=PickUpResponse.get_metadata()),
             ),
-            (
-                self.EmptyTruckRequest(self.jid, self.logger, self.logic),
-                None
-            ),
+            (self.EmptyTruckRequest(self.jid, self.logger, self.logic), None),
             (
                 self.ReciveAcceptDisposal(self.logger, self.logic),
                 Template(metadata=AcceptDisposal.get_metadata()),
             ),
-            (
-                self.EmptyTruck(self.logger, self.logic),
-                None
-            ),
+            (self.EmptyTruck(self.logger, self.logic), None),
         ]
 
     def step(self):
@@ -71,12 +59,7 @@ class TruckAgent(BaseAgent):
             self.logic.need_empty = True
 
     class PickUpRubbish(CyclicBehaviour):
-        def __init__(
-                self,
-                jid: Union[str, JID],
-                logger: Logger,
-                logic: TruckLogic
-        ):
+        def __init__(self, jid: Union[str, JID], logger: Logger, logic: TruckLogic):
             super().__init__()
             self.sender = jid
             self.logger = logger
@@ -84,18 +67,18 @@ class TruckAgent(BaseAgent):
 
         async def run(self) -> None:
             target = self.logic.curr_target()
-            if target and self.logic.position == target.cords and not self.logic.stop and not target.cords in self.logic.landfills.values():
+            if (
+                target
+                and self.logic.position == target.cords
+                and not self.logic.stop
+                and not target.cords in self.logic.landfills.values()
+            ):
                 msg = PickUpMessage().to_spade(JID(*target.jid), self.sender)
                 await self.send(msg)
                 self.logic.stop = True
 
     class ReceivePickUpResponse(CyclicBehaviour):
-        def __init__(
-                self,
-                jid: Union[str, JID],
-                logger: Logger,
-                logic: TruckLogic
-        ):
+        def __init__(self, jid: Union[str, JID], logger: Logger, logic: TruckLogic):
             super().__init__()
             self.sender = jid
             self.logger = logger
@@ -108,12 +91,7 @@ class TruckAgent(BaseAgent):
                 self.logic.pick_up(rsp_content.volume)
 
     class ReceiveRouteOrder(CyclicBehaviour):
-        def __init__(
-                self,
-                jid: Union[str, JID],
-                logger: Logger,
-                logic: TruckLogic
-        ):
+        def __init__(self, jid: Union[str, JID], logger: Logger, logic: TruckLogic):
             super().__init__()
             self.sender = jid
             self.logger = logger
@@ -125,9 +103,7 @@ class TruckAgent(BaseAgent):
                 msg_content: RouteOrder = BaseMessage.parse(msg)
                 overflow_volume = self.logic.check_order(msg_content.route)
                 if overflow_volume:
-                    rsp = DeclineOrder(
-                        overflow_volume=overflow_volume
-                    ).to_spade(msg.sender, self.sender)
+                    rsp = DeclineOrder(overflow_volume=overflow_volume).to_spade(msg.sender, self.sender)
                     self.logger.log("DECLINE")
                 else:
                     rsp = AcceptOrder().to_spade(msg.sender, self.sender)
@@ -136,12 +112,7 @@ class TruckAgent(BaseAgent):
 
     class SendTruckState(PeriodicBehaviour):
         def __init__(
-                self,
-                jid: Union[str, JID],
-                supervisor_jid: Union[str, JID],
-                period: int,
-                logger: Logger,
-                logic: TruckLogic
+            self, jid: Union[str, JID], supervisor_jid: Union[str, JID], period: int, logger: Logger, logic: TruckLogic
         ):
             super().__init__(period)
             self.sender = jid
@@ -159,12 +130,7 @@ class TruckAgent(BaseAgent):
             await self.send(msg)
 
     class EmptyTruckRequest(CyclicBehaviour):
-        def __init__(
-                self,
-                jid: Union[str, JID],
-                logger: Logger,
-                logic: TruckLogic
-        ):
+        def __init__(self, jid: Union[str, JID], logger: Logger, logic: TruckLogic):
             super().__init__()
             self.sender = jid
             self.logger = logger
@@ -172,17 +138,13 @@ class TruckAgent(BaseAgent):
 
         async def run(self) -> None:
             if self.logic.need_empty:
-                self.logic.need_empty = False # w przypadku odmowy wysypiska ustawić znowu na True
+                self.logic.need_empty = False  # w przypadku odmowy wysypiska ustawić znowu na True
                 garbage_amount = self.logic.max_volume - self.logic.estimate_remaining_volume()
                 msg = DisposalMessage(garbage_amount=garbage_amount).to_spade(self.logic.select_landlift(), self.sender)
                 await self.send(msg)
 
     class ReciveAcceptDisposal(CyclicBehaviour):
-        def __init__(
-                self,
-                logger: Logger,
-                logic: TruckLogic
-        ):
+        def __init__(self, logger: Logger, logic: TruckLogic):
             super().__init__()
             self.logger = logger
             self.logic = logic
@@ -192,20 +154,23 @@ class TruckAgent(BaseAgent):
             if msg:
                 garbage_amount = self.logic.max_volume - self.logic.estimate_remaining_volume()
                 _ = BaseMessage.parse(msg)
-                self.logic.update_route(Route([Target(self.logic.landfills[str(msg.sender)], str(msg.sender), -garbage_amount)]))
-                
+                self.logic.update_route(
+                    Route([Target(self.logic.landfills[str(msg.sender)], str(msg.sender), -garbage_amount)])
+                )
+
     class EmptyTruck(CyclicBehaviour):
-        def __init__(
-                self,
-                logger: Logger,
-                logic: TruckLogic
-        ):
+        def __init__(self, logger: Logger, logic: TruckLogic):
             super().__init__()
             self.logger = logger
             self.logic = logic
 
         async def run(self) -> None:
             target = self.logic.curr_target()
-            if target and self.logic.position == target.cords and not self.logic.stop and target.cords in self.logic.landfills.values():
+            if (
+                target
+                and self.logic.position == target.cords
+                and not self.logic.stop
+                and target.cords in self.logic.landfills.values()
+            ):
                 self.logic.fill_level_percentage = 0
                 self.logic.stop = True

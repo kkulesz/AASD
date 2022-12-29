@@ -23,9 +23,10 @@ class TruckModel:
 
 
 class SupervisorLogic:
-    def __init__(self,
-                 logger: Logger,
-                 ):
+    def __init__(
+        self,
+        logger: Logger,
+    ):
         self.logger = logger
         self.bins: Dict[JID, BinModel] = dict()
         self.trucks: Dict[JID, TruckModel] = dict()
@@ -80,9 +81,11 @@ class SupervisorLogic:
             targets = []
             for bin_id in assignments[truck_id]:
                 bin_jid, bin_info = target_bins[bin_id]
-                target = Target(jid=bin_jid,
-                                est_rubbish_volume=bin_info.max_volume * bin_info.curr_fill_percentage,
-                                cords=bin_info.cords)
+                target = Target(
+                    jid=bin_jid,
+                    est_rubbish_volume=bin_info.max_volume * bin_info.curr_fill_percentage,
+                    cords=bin_info.cords,
+                )
                 targets.append(target)
                 self.bins_in_current_routes.add(bin_jid)
             route = Route(targets)
@@ -95,9 +98,11 @@ class SupervisorLogic:
             for truck_arg in truck_list:
                 truck_info = trucks[truck_arg][1]
                 if truck_info.free_space > (
-                        target_bins[bin_id][1].max_volume * target_bins[bin_id][1].curr_fill_percentage):
-                    truck_info.free_space -= target_bins[bin_id][1].max_volume * target_bins[bin_id][
-                        1].curr_fill_percentage
+                    target_bins[bin_id][1].max_volume * target_bins[bin_id][1].curr_fill_percentage
+                ):
+                    truck_info.free_space -= (
+                        target_bins[bin_id][1].max_volume * target_bins[bin_id][1].curr_fill_percentage
+                    )
                     trucks[truck_arg][1] = truck_info
                     if truck_arg in assignments:
                         assignments[truck_arg].append(bin_id)
