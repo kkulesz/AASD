@@ -31,6 +31,7 @@ class TruckLogic:
         self.landfills = landfills
         self.stop = False
         self.need_empty = False
+        self.on_way = False
 
     def min_free_space(self):
         return self.max_volume / 20

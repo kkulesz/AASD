@@ -55,7 +55,7 @@ class TruckAgent(BaseAgent):
     def step(self):
         self.logic.move()
         # TODO na razie gdy zapełni się co najmniej do połowy to chcemy ją opróżnić
-        if self.logic.fill_level_percentage > 0.5 and not self.logic.need_empty:
+        if self.logic.fill_level_percentage > 0.5:
             self.logic.need_empty = True
 
     class PickUpRubbish(CyclicBehaviour):
@@ -137,8 +137,8 @@ class TruckAgent(BaseAgent):
             self.logic = logic
 
         async def run(self) -> None:
-            if self.logic.need_empty:
-                self.logic.need_empty = False  # w przypadku odmowy wysypiska ustawić znowu na True
+            if self.logic.need_empty and not self.logic.on_way:
+                self.logic.on_way = True
                 garbage_amount = self.logic.max_volume - self.logic.estimate_remaining_volume()
                 msg = DisposalMessage(garbage_amount=garbage_amount).to_spade(self.logic.select_landlift(), self.sender)
                 await self.send(msg)
@@ -174,3 +174,4 @@ class TruckAgent(BaseAgent):
             ):
                 self.logic.fill_level_percentage = 0
                 self.logic.stop = True
+                self.logic.on_way = False
